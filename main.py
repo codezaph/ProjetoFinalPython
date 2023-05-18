@@ -4,7 +4,6 @@ import pandas as pd
 from time import sleep
 from selenium.webdriver.common.by import By
 from os import path
-import py7zr
 import math
 
 chrome_options = Options()
@@ -74,10 +73,7 @@ def abreLink(link, caminhoDownload):
     driver.quit()
 
 
-# extraindo zip
-def extrair_arquivo_7z(arquivo_7z, destino):
-    with py7zr.SevenZipFile(arquivo_7z, mode='r') as z:
-        z.extractall(path=r"C:\Users\Code\Downloads")
+
 
 
 sleep(15)
@@ -121,7 +117,7 @@ sleep(30)
 caminhoArquivoBaixado = path.join(arquivoBaixado, '5m-Sales-Records.7z')
 
 # Extrai o arquivo baixado
-extrair_arquivo_7z(caminhoArquivoBaixado, arquivoBaixado)
+#extrair_arquivo_7z(caminhoArquivoBaixado, arquivoBaixado)
 
 # Define o caminho do arquivo CSV
 caminhoCsv = r"C:/Users/Code/Downloads/5m Sales Records.csv"
