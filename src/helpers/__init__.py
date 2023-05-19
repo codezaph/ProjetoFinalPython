@@ -6,6 +6,7 @@ from os import path
 
 download_path = path.join(path.expanduser('~'), 'Downloads')
 
+
 class HelpersFunc:
     @staticmethod
     def input_login_gui():
@@ -38,26 +39,15 @@ class HelpersFunc:
 
         return emailData, passworData
 
-        # extraindo zip
-
     @staticmethod
-    def extract_zip(file):
-        # pegar diretorio do usuario
-        with py7zr.SevenZipFile(file, mode='r') as z:
-            z.extractall(path=download_path)
-
-    @staticmethod
-    def convert_csv_to_excel(path):
-        # Tamanho máximo por planilha
-        chunk_size = 500000
+    def convert_csv_to_excel(path_csv, dist_excel, filename_excel):
+        chunk_size = 500000  # Tamanho máximo por planilha
 
         # Ler o arquivo CSV em partes menores
-        reader = pd.read_csv(path, sep=';', decimal=',', chunksize=chunk_size)
-
-        excel_file = "C:/Users/Code/Downloads/5m Sales Records.xlsx"
+        reader = pd.read_csv(path_csv, sep=';', decimal=',', chunksize=chunk_size)
 
         # Criar um arquivo Excel
-        with pd.ExcelWriter(excel_file) as writer:
+        with pd.ExcelWriter(path.join(dist_excel, filename_excel)) as writer:
             sheet_number = 1
             for chunk in reader:
                 # Salvar cada parte como uma planilha separada no arquivo Excel
@@ -66,4 +56,28 @@ class HelpersFunc:
                 sheet_number += 1
 
         print("Arquivo Excel gerado com sucesso!")
-        os.startfile(excel_file)
+        os.remove(path_csv)
+        os.startfile(path.join(dist_excel, filename_excel))
+
+    @staticmethod
+    def extract_7z(file_path, dist_path, password=None):
+        with py7zr.SevenZipFile(file_path, mode='r', password=password) as z:
+            z.extractall(path=dist_path)
+
+        # nome do arquivo extraído
+        os.remove(file_path)
+        return os.listdir(dist_path)[0]
+
+    @staticmethod
+    def split_csv_file(csv_path, chunk_size, dist_path):
+        # Carrega o arquivo CSV em partes menores
+        reader = pd.read_csv(csv_path, sep=';', decimal=',', chunksize=chunk_size)
+
+        # Salva cada parte como um arquivo CSV separado
+        for i, chunk in enumerate(reader):
+            chunk.to_csv(path.join(dist_path, f"part-{i}.csv"), sep=';', decimal=',', index=False, header=True)
+
+        print("Arquivo CSV dividido com sucesso!")
+        # remove o arquivo csv original
+        os.remove(csv_path)
+        os.startfile(dist_path)
