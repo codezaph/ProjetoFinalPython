@@ -1,3 +1,4 @@
-from src.config import Config
+from src import Run
 
-Config.get_browser()
+if __name__ == '__main__':
+    Run()

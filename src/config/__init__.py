@@ -9,7 +9,7 @@ class Config:
     service = Service(ChromeDriverManager().install())
 
     # colocar o caminho para a pasta download na raiz do projeto
-    prefs = {"download.default_directory": os.getcwd() + "\\downloads"}
+    prefs = {"download.default_directory": os.getcwd() + '\\downloads'}
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("prefs", prefs)
     browser = webdriver.Chrome(service=service, options=chrome_options)

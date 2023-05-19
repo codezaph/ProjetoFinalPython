@@ -41,23 +41,19 @@ class HelpersFunc:
 
     @staticmethod
     def convert_csv_to_excel(path_csv, dist_excel, filename_excel):
+
         chunk_size = 500000  # Tamanho máximo por planilha
 
-        # Ler o arquivo CSV em partes menores
-        reader = pd.read_csv(path_csv, sep=';', decimal=',', chunksize=chunk_size)
+        reader = pd.read_csv(path_csv, sep=',', decimal='.', chunksize=chunk_size)
 
         # Criar um arquivo Excel
         with pd.ExcelWriter(path.join(dist_excel, filename_excel)) as writer:
             sheet_number = 1
             for chunk in reader:
                 # Salvar cada parte como uma planilha separada no arquivo Excel
-                sheet_name = f"Sheet {sheet_number}"
+                sheet_name = f'Sheet {sheet_number}'
                 chunk.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
                 sheet_number += 1
-
-        print("Arquivo Excel gerado com sucesso!")
-        os.remove(path_csv)
-        os.startfile(path.join(dist_excel, filename_excel))
 
     @staticmethod
     def extract_7z(file_path, dist_path, password=None):
@@ -73,11 +69,7 @@ class HelpersFunc:
         # Carrega o arquivo CSV em partes menores
         reader = pd.read_csv(csv_path, sep=';', decimal=',', chunksize=chunk_size)
 
-        # Salva cada parte como um arquivo CSV separado
         for i, chunk in enumerate(reader):
+            print(f'Criando parte {i + 1}', end='')
             chunk.to_csv(path.join(dist_path, f"part-{i}.csv"), sep=';', decimal=',', index=False, header=True)
-
-        print("Arquivo CSV dividido com sucesso!")
-        # remove o arquivo csv original
-        os.remove(csv_path)
-        os.startfile(dist_path)
+            print(' - OK')

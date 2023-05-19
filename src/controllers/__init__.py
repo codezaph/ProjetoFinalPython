@@ -5,15 +5,13 @@ import os
 from src.config import Config
 from src.helpers import HelpersFunc
 
-
-
-DEFAULT_SLEEP_TIME = 3.5
+DEFAULT_SLEEP_TIME = 5
 
 
 class MainController:
     def __init__(self, email, password):
-        self.email = '202202734845@alunos.estacio.br'
-        self.password = 'ccff5436$'
+        self.email = email
+        self.password = password
         self.file_path = os.getcwd() + '\\downloads\\5m-Sales-Records.7z'
         self.browser = Config().get_browser()
 
@@ -28,7 +26,7 @@ class MainController:
         sleep(DEFAULT_SLEEP_TIME)
 
         btn_enter = self.browser.find_element(By.CSS_SELECTOR,
-                '#section-login > div > div > div > section > div.sc-gKRMOK > button')
+                                              '#section-login > div > div > div > section > div > button')
         btn_enter.click()
 
         sleep(DEFAULT_SLEEP_TIME)
@@ -70,18 +68,52 @@ class MainController:
             sleep(1)
 
     def _convert_file(self):
-        dist_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
-        name = HelpersFunc.extract_7z(self.file_path, dist_path)
-        print(name)
-        dist_path_file_csv = os.path.join(dist_path, name)
+        download_path_project = os.getcwd() + '\\downloads'
+        parts_path = os.path.join(download_path_project, 'parts')
 
+        # criar a pasta 'parts' se ela não existir
+        if not os.path.exists(parts_path):
+            os.mkdir(parts_path)
+
+        name = HelpersFunc.extract_7z(self.file_path, download_path_project)
+
+        # separar o arquivo .csv em partes menores
         chunk_size = 1000000
-        HelpersFunc.split_csv_file(dist_path_file_csv, chunk_size, dist_path)
 
-        HelpersFunc.convert_csv_to_excel(dist_path_file_csv, dist_path, filename_excel='5m Sales Records.x;lsx')
+        print('--' * 20)
+        print('Separando o arquivo em partes menores...\n')
 
-        os.remove(self.file_path)
+        file_csv_path = os.path.join(download_path_project, name)
+        HelpersFunc.split_csv_file(file_csv_path, chunk_size, parts_path)
 
+        # removendo o arquivo .csv baixado
+        os.remove(file_csv_path)
 
-main = MainController('email', 'senha')
+        # converter as partes para .csv
+        download_path_sys = os.path.join(os.environ['USERPROFILE'], 'Downloads')
 
+        print('\n')
+        print('--' * 20)
+        print('\nConvertendo as partes para .xlsx...\n')
+
+        # pegar caminho de cada parte
+        parts = os.listdir(parts_path)
+
+        total_parts = len(parts)
+        for i, part in enumerate(parts):
+            print(f'{i + 1}/{total_parts}', end='')
+            path_part = os.path.join(parts_path, part)
+            HelpersFunc.convert_csv_to_excel(
+                path_part, download_path_sys, f'5m Sales Records-{part.replace(".csv", ".xlsx")}')
+
+            os.remove(path_part)
+            print(' - OK')
+
+            if i == 0:
+                break
+
+        os.rmdir(parts_path)
+        os.rmdir(download_path_project)
+
+        # abrir pasta
+        os.startfile(download_path_sys)
