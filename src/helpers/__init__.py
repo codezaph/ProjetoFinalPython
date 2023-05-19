@@ -55,6 +55,8 @@ class HelpersFunc:
                 chunk.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
                 sheet_number += 1
 
+        os.remove(path_csv)
+
     @staticmethod
     def extract_7z(file_path, dist_path, password=None):
         with py7zr.SevenZipFile(file_path, mode='r', password=password) as z:

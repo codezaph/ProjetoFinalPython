@@ -48,7 +48,7 @@ class MainController:
         btn_dont_save_account = self.browser.find_element(By.CSS_SELECTOR, '#idBtn_Back')
         btn_dont_save_account.click()
 
-        sleep(DEFAULT_SLEEP_TIME + 2)
+        sleep(DEFAULT_SLEEP_TIME + 5)
 
     def _open_link(self):
         self.browser.find_element(By.CSS_SELECTOR,
@@ -106,13 +106,8 @@ class MainController:
             HelpersFunc.convert_csv_to_excel(
                 path_part, download_path_sys, f'5m Sales Records-{part.replace(".csv", ".xlsx")}')
 
-            os.remove(path_part)
             print(' - OK')
 
-            if i == 0:
-                break
-
-        os.rmdir(parts_path)
         os.rmdir(download_path_project)
 
         # abrir pasta
