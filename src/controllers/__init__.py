@@ -108,6 +108,7 @@ class MainController:
 
             print(' - OK')
 
+        os.rmdir(parts_path)
         os.rmdir(download_path_project)
 
         # abrir pasta
